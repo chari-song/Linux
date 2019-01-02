@@ -1,0 +1,25 @@
+#!/usr/bin/expect
+set user "fsp"
+set host [lindex $argv 0]
+#set timeout 100
+set password "Huawei@CLOUD8"
+spawn ssh $user@10.194.$host
+expect {
+ "*yes/no*" {send "yes\r"; exp_continue}
+ "fsp@10.194*" {send "$password\r"; exp_continue}
+ "*UNIX password:" {send "$password\r"; exp_continue}
+ "New password:" {send "Lzzwy@4rfv\r"; exp_continue}
+ "Retype new password:" {send "Lzzwy@4rfv\r"}
+}
+expect "]*"
+if { $argc != 0 } {
+ if { [send "ip a|grep 10.194.$host|wc -l\r"] != 0 } {
+  send "passwd\r"
+  expect "*UNIX 密码：" {send "Huawei@CLOUD8\r"}
+  expect "新的*" {send "Lzzwy@4rfv\r"}
+  expect "重新输入新的*" {send "Lzzwy@4rfv\r"}
+  #send "echo \"Lzzwy@4rfv\" | passwd --stdin fsp\r"
+ }
+}
+#interact
+expect eof
