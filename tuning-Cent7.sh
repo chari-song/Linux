@@ -23,15 +23,15 @@ cat /etc/sysconfig/network-scripts/ifcfg-ens192
 # 系统升级基础
 mv /etc/yum.d/CentOS-Base.repo /etc/yum.d/CentOS-Base.repo.bak
 curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS7-Base-163.repo
-yum clean all # 清楚缓存
-yum makecache # 建立缓存
-yum update #升级系统
+yum clean all > /dev/null 2>&1 # 清楚缓存
+yum makecache > /dev/null 2>&1 # 建立缓存
+yum update > /dev/null 2>&1 #升级系统
 # 添加epel外部yum源
-yum -y install epel-release
+yum -y install epel-release > /dev/null 2>&1
 # 安装gcc基础库文件及sysstat，bind-utils
-yum -y install gcc gcc-c++ vim-enhanced unzip unrar sysstat bind-utils
+yum -y install gcc gcc-c++ vim-enhanced unzip unrar sysstat bind-utils > /dev/null 2>&1
 # 配置ntpdate自动对时
-yum -y install ntp
+yum -y install ntp > /dev/null 2>&1
 echo "01 01 * * * /usr/sbin/ntpdate ntp.api.bz	>> /dev/null 2>&1" >> /etc/crontab
 ntpdate ntp.api.bz
 systemctl restart crond
@@ -55,7 +55,7 @@ net.ipv4.tcp_max_tw_buckets = 36000
 net.ipv6.conf.all.disable_ipv6 =1
 net.ipv6.conf.default.disable_ipv6 =1
 EOF
-/sbin/sysctl -p
+sysctl -p
 # 关闭seLinux、防火墙及优化ssh登录
 systemctl stop firewalld
 systemctl disable firewalld
@@ -67,16 +67,4 @@ echo "# history" >> /etc/profile
 echo "export HISTSIZE=100000" >> /etc/profile
 echo "export HISTTIMEFORMAT='[%Y-%m-%d %H:%M:%S]'" >> /etc/profile
 source /etc/profile
-# vim基础语法优化
-cat >> /root/.vimrc << EOF
-set number
-set ruler
-set nohlsearch
-set shiftwidth=2
-set tabstop=4
-set expandtab
-set cindent
-set autoindent
-set mouse=v
-syntax on
-EOF
+reboot
