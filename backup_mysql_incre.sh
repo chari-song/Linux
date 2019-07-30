@@ -28,27 +28,28 @@ find $backup_path -type f -mtime +$day -exec rm -rf {} \; > /dev/null 2>&1
 # for循环对比是否存在或是否为最新的文件
 echo "开始备份数据库: ..."
 for file in `cat $mysqlbinfile`
-do 
-	# basename用于截取mysql-bin.0000*文件名,去掉./mysql-bin.0000*前面的./
-    backup_name=`basename $file`
-    nextnum=`expr $nextnum + 1`
-	cd $backup_path
-	if [ $nextnum -eq $counter ];then
-        echo "$backup_name 备份 $backup_name 失败" >> $backup_log
+do
+  # basename用于截取mysql-bin.0000*文件名,去掉./mysql-bin.0000*前面的./
+  dbname=`basename $file`
+  backup_name=`basename $file`_$date
+  nextnum=`expr $nextnum + 1`
+  cd $backup_path
+  if [ $nextnum != $counter ];then
+    dest=$backup_path/$dbname*
+    # 检测文件是否存在,不存在则备份
+    if [ ! -e $dest ];then
+      cp $mysqlbin_path/$dbname $backup_path/
+      tar czvf $backup_name.tar.gz $dbname --force-local
+      size=$(du $dbname.tar.gz -sh | awk '{print $1}')
+      rm -rf $dbname
+      echo "$dbname 备份 $dbname($size) 成功" >> $backup_log
+      du $backup_path/* -sh | grep mysql-bin | awk '{print "文件:" $2 ",大小:" $1}'
     else
-        dest=$backup_path/$backup_name
-		# test -e 检测文件是否存在
-        if (test -e $dest);then
-            echo "$backup_name 备份 $backup_name 失败" >> $backup_log
-        else
-            cp $mysqlbin_path/$backup_name $backup_path/
-			tar czvf $backup_name_$date.tar.gz $backup_name --force-local
-			size=$(du $backup_name.tar.gz -sh | awk '{print $1}')
-			rm -rf $backup_name
-            echo "$backup_name 备份 $backup_name($size) 成功" >> $backup_log
-        fi
+      echo "$dbname 备份 $dbname 已存在" >> $backup_log
+      continue
     fi
+  fi
 done
  
 echo "备份结束,结果查看 $backup_log"
-du $backup_path/*$date* -sh | awk '{print "文件:" $2 ",大小:" $1}
+du $backup_path/* -sh | grep mysql-bin | awk '{print "文件:" $2 ",大小:" $1}'
