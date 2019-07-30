@@ -6,7 +6,7 @@ source ~/.bash_profile # 加载用户环境变量
 
 # 定义全局变量
 user="root"
-password="Huawei@123"
+password="123"
 host="localhost"
 port="3306"
 db=("zabbix")
@@ -34,7 +34,7 @@ backup_sql(){
   mysqldump -h $host -P $port -u $user -p$password $lock --default-character-set=utf8 --flush-logs -R $dbname > $backup_path/$backup_name
   if [[ $? == 0 ]];then
     cd $backup_path
-	# tar --force-local参数压缩带有冒号的压缩包
+    # tar --force-local参数压缩带有冒号的压缩包
     tar czvf $backup_name.tar.gz $backup_name --force-local
     size=$(du $backup_name.tar.gz -sh | awk '{print $1}')
     rm -rf $backup_name
@@ -53,4 +53,4 @@ for ((i=0;i<$length;i++));do
 done
 
 echo "备份结束,结果查看 $backup_log"
-du $backup_path/*$date* -sh | awk '{print "文件:" $2 ",大小:" $1}
+du $backup_path/*$date* -sh | awk '{print "文件:" $2 ",大小:" $1}'
