@@ -1,5 +1,6 @@
 #!/bin/bash
 # 增量备份方式,在从机上执行,适用于中大型mysql数据库
+# 同时数据库配置文件必须开启binlog二进制文件
 
 source /etc/profile # 加载系统环境变量
 source ~/.bash_profile # 加载用户环境变量
@@ -15,8 +16,8 @@ day=30
 # 刷新新的mysql-bin.0000*文件
 mysqladmin -uroot -pHuawei@123 flush-logs
 
-counter=`cat $mysqlbinfile|wc -l`
-nextnum=0
+statistics=`cat $mysqlbinfile|wc -l`
+num=0
 # 判断是否存在目录,不存在则创建目录
 if [ ! -e $backup_path ];then
   mkdir -p $backup_path
@@ -32,13 +33,15 @@ do
   # basename用于截取mysql-bin.0000*文件名,去掉./mysql-bin.0000*前面的./
   dbname=`basename $file`
   backup_name=`basename $file`_$date
-  nextnum=`expr $nextnum + 1`
+  statistics=`expr $num + 1`
   cd $backup_path
-  if [ $nextnum != $counter ];then
+  # 判断是否刷新二进制文件
+  if [ $num != $statistics ];then
     dest=$backup_path/$dbname*
-    # 检测文件是否存在,不存在则备份
+    # 判断文件是否存在,不存在则备份
     if [ ! -e $dest ];then
       cp $mysqlbin_path/$dbname $backup_path/
+      # --force-local，打包文件中带有冒号需要加上--force-local参数
       tar czvf $backup_name.tar.gz $dbname --force-local
       size=$(du $dbname.tar.gz -sh | awk '{print $1}')
       rm -rf $dbname
