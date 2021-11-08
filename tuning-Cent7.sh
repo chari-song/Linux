@@ -45,7 +45,7 @@ function system_yumrepo(){
     # 设置时钟同步
     sys_time=`date +%Y%m%d`
     cd /etc/yum.repos.d/
-    mv CentOS-Base.repo CentOS-Base.repo.$sys_timebak
+    mv CentOS-Base.repo CentOS-Base.repo."$sys_timebak"
     curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS7-Base-163.repo
     yum clean all > /dev/null 2>&1
     yum makecache > /dev/null 2>&1
@@ -102,7 +102,7 @@ function system_sys(){
 function main(){
     # 主函数，系统初始化的函数
     read -p "请输入优化的模块[network|yum|kennel|sys|all|自定义模块]: " -a Sysctl
-    for ((i=0;i<${#sysctl[@]};i++}));do
+    for ((i=0;i<${#Sysctl[@]};i++}));do
         sysctl=${Sysctl[i]}
         if [ $sysctl == 'network' ];then
             network_config
@@ -112,7 +112,7 @@ function main(){
             system_kennel
         elif [ $sysctl == 'sys' ];then
             system_sys
-        else [ $sysctl == 'all' ];then
+        elif [ $sysctl == 'all' ];then
             network_config
             system_yumrepo
             system_kennel
