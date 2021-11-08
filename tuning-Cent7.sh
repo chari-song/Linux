@@ -95,24 +95,23 @@ function system_sys(){
     echo "export HISTSIZE=100000" >> /etc/profile
     echo "export HISTTIMEFORMAT='[%Y-%m-%d %H:%M:%S]'" >> /etc/profile
     sed -i 's/#set bell-style none/set bell-style none/' /etc/inputrc
-    echo "set vb" /etc/inputrc
+    echo "set vb" >> /etc/inputrc
     source /etc/profile
 }
 
 function main(){
     # 主函数，系统初始化的函数
     read -p "请输入优化的模块[network|yum|kennel|sys|all|自定义模块]: " -a Sysctl
-    for ((i=0;i<${#Sysctl[@]};i++));do
-        sysctl=${Sysctl[i]}
-        if [ $sysctl == 'network' ];then
+    for i in ${Sysctl[@]};do
+        if [ $i == 'network' ];then
             network_config
-        elif [ $sysctl == 'yum' ];then
+        elif [ $i == 'yum' ];then
             system_yumrepo
-        elif [ $sysctl == 'kennel' ];then
+        elif [ $i == 'kennel' ];then
             system_kennel
-        elif [ $sysctl == 'sys' ];then
+        elif [ $i == 'sys' ];then
             system_sys
-        elif [ $sysctl == 'all' ];then
+        elif [ $i == 'all' ];then
             network_config
             system_yumrepo
             system_kennel
