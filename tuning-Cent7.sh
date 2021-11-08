@@ -102,7 +102,7 @@ function system_sys(){
 function main(){
     # 主函数，系统初始化的函数
     read -p "请输入优化的模块[network|yum|kennel|sys|all|自定义模块]: " -a Sysctl
-    for ((i=0;i<${#Sysctl[@]};i++}));do
+    for ((i=0;i<${#Sysctl[@]};i++));do
         sysctl=${Sysctl[i]}
         if [ $sysctl == 'network' ];then
             network_config
