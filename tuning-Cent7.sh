@@ -94,7 +94,7 @@ function system_sys(){
     echo "# history" >> /etc/profile
     echo "export HISTSIZE=100000" >> /etc/profile
     echo "export HISTTIMEFORMAT='[%Y-%m-%d %H:%M:%S]'" >> /etc/profile
-    sed -i 's@#set bell-style none@set bell-style none' /etc/inputrc
+    sed -i 's/#set bell-style none/set bell-style none/' /etc/inputrc
     echo "set vb" /etc/inputrc
     source /etc/profile
 }
